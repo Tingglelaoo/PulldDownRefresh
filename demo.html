@@ -1,0 +1,55 @@
+<!DOCTYPE HTML>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0;" />
+    <meta name="format-detection" content="telephone=no" />
+    <title>下拉刷新</title>
+    <style>
+    * {
+        margin: 0;
+        padding: 0;
+    }
+    .pullrefresh {
+        line-height: 40px;
+        height: 0;
+        text-align: center;
+        transition: height 0.25s, border-top-width 0.25s;
+        background-color: #e8e8ed;
+        font-size: 14px;
+        overflow: hidden;
+    }
+    .content {
+        height: 900px;
+        background-color: #000;
+    }
+    .footer {
+        height: 100px;
+        background-color: #fff;
+    }
+    </style>
+</head>
+<body>
+    <script>document.body.addEventListener('touchmove', function(){}, false)</script>
+
+    <div class="pullrefresh" id="J_pullRefresh"></div>
+    <div class="content"></div>
+    <div class="footer"></div>
+
+    <script src="./js/zepto.min.js"></script>
+    <script src="./js/pulldownrefresh.js"></script>
+    <script>
+    // 调用方法
+    new pullDownRefresh($('#J_pullRefresh'),{
+        onReload: function() {
+            var self = this;
+            console.log('==================reload====================');
+            setTimeout(function(){
+                self.recover();
+            }, 2000* Math.random());
+        }
+    });
+    </script>
+</body>
+</html>
