@@ -11,15 +11,6 @@
         margin: 0;
         padding: 0;
     }
-    .pullrefresh {
-        line-height: 40px;
-        height: 0;
-        text-align: center;
-        transition: height 0.25s, border-top-width 0.25s;
-        background-color: #e8e8ed;
-        font-size: 14px;
-        overflow: hidden;
-    }
     .content {
         height: 900px;
         background-color: #000;
@@ -28,28 +19,74 @@
         height: 100px;
         background-color: #fff;
     }
+    .pulldownrefresh {
+        line-height: 40px;
+        height: 0;
+        text-align: center;
+        transition: height 0.25s, border-top-width 0.25s;
+        background-color: #e8e8ed;
+        font-size: 14px;
+        overflow: hidden;
+    }
+    .pulluprefresh {
+        line-height: 40px;
+        height: 40px;
+        font-size: 14px;
+        text-align: center;
+        color: #666;
+        background-color: #e8e8ed;
+        transition: border-bottom-width 0.25s cubic-bezier(0.785, 0.135, 0.15, 0.86);
+        overflow: hidden;
+    }
+    .pulluprefresh::before {
+        content: '';
+        display: inline-block;
+        vertical-align: middle;
+        margin-top: -3px;
+        margin-right: 5px;
+        width: 15px;
+        height: 15px;
+        transform: rotate(-90deg);
+        -webkit-transform: rotate(-90deg);
+        background: url(images/jdrank_more_arr@2x.png) no-repeat;
+        background-size: 15px auto;
+        border-radius: 15px;
+    }
     </style>
 </head>
 <body>
     <script>document.body.addEventListener('touchmove', function(){}, false)</script>
 
-    <div class="pullrefresh" id="J_pullRefresh"></div>
+    <div class="pulldownrefresh" id="J_pullDownRefresh"></div>
     <div class="content"></div>
     <div class="footer"></div>
+    <div class="pulluprefresh" id="J_pullUpRefresh">上拉跳转至页面xxx</div>
 
     <script src="./js/zepto.min.js"></script>
     <script src="./js/pulldownrefresh.js"></script>
+    <script src="./js/pulluprefresh.js"></script>
     <script>
-    // 调用方法
-    new pullDownRefresh($('#J_pullRefresh'),{
+    // 调用方法：下拉刷新
+    new pullDownRefresh($('#J_pullDownRefresh'),{
         onReload: function() {
             var self = this;
-            console.log('==================reload====================');
+            console.log('==================reload:pulldownrefresh====================');
             setTimeout(function(){
-                self.recover();
+                self.origin();
             }, 2000* Math.random());
         }
     });
+    // 调用方法：上拉跳转
+    new pullUpRefresh($('#J_pullUpRefresh'),{
+        onReload: function() {
+            var self = this;
+            console.log('==================reload:pulluprefresh====================');
+            setTimeout(function(){
+                self.origin();
+            }, 4000* Math.random());
+        }
+    });
+
     </script>
 </body>
 </html>

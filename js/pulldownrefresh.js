@@ -1,9 +1,3 @@
-/**
- * [下拉刷新] 参考：https://github.com/yued-fe/drag-loading
- * {{pullDownRefresh}}
- * @param  {[Zepto对象]} $el      [loading提示元素，注意配合样式]
- * @param  {[对象]} options       [见注释]
- */
 var pullDownRefresh = function($el,options){
     var defaults = {
             trigger: $('body'), // 绑定监听滚动元素
@@ -18,6 +12,10 @@ var pullDownRefresh = function($el,options){
     self.$el = $el;
     $el.css('border-top', '0 solid transparent');
 
+    $el.on('webkitTransitionEnd',function(){
+        self.isLoading = false;
+    })
+
     // 事件绑定
     params.trigger.on({
         touchstart: function(e){
@@ -26,8 +24,8 @@ var pullDownRefresh = function($el,options){
             data.startY = ev.pageY;
             data.endY = ev.pageY;
             data.transY = 0;
-            // console.log('startY:' + data.startY);
 
+            self.isPullDown = false;
         },
         touchmove: function(e){
             var ev = e.touches[0] || e;
@@ -37,50 +35,41 @@ var pullDownRefresh = function($el,options){
 
             if(data.transY > 0 && $(window).scrollTop() <= 0) {
                 e.preventDefault();
-                // console.log('pullDown');
-                data.isPullDown = true;
+                self.isPullDown = true;
 
                 // 提示
                 if(!data.isNeedHolding && (data.transY < params.maxTrans)) {
                     data.isNeedHolding = true;
-                    // console.log('下拉');
                     $el.text('下拉更新');
                 }
                 if(data.isNeedHolding && (data.transY > params.maxTrans)) {
                     data.isNeedHolding = false;
-                    // console.log('松开');
                     $el.text('松开更新');
                 }
-
+                
                 var valHeight = Math.min(data.transY,params.maxTrans);
                 var overflowHeight = Math.max(0, data.transY - params.maxTrans)/2;
                 var borderTopWidth = self.damping(overflowHeight);
                 $el.css({
                     height: valHeight,
+                    // 使用border继续增加高度的意义在于loading里面如果有绝对定位等适应性会更强
+                    // 然后，随着继续往下拉，再高度变大
                     borderTopWidth: borderTopWidth,
                     transition: 'none'
                 });
 
-                // console.log('transY:' + data.transY);
             }
-
-            
-
         },
         touchend: function(e){
-            if(data.isPullDown) {
+            if(self.isPullDown) {
                 self.isLoading = true;
-                // console.log('touchend');
                 if(data.transY > params.maxTrans) {
                     $el.text('更新中...');
                     params.onReload.call(self);
                 }else {
-                    self.recover();
+                    self.origin();
                 }
             }
-            data.isPullDown = false;
-            
-            // console.log('transY:' + data.transY);
         }
     })
     
@@ -89,18 +78,16 @@ var pullDownRefresh = function($el,options){
 
 /**
  * [暴露方法－恢复最初状态]
- * {{recover}}
+ * {{origin}}
  * @author litingting6@jd.com 2017-04-08
  */
-pullDownRefresh.prototype.recover = function() {
+pullDownRefresh.prototype.origin = function() {
     var self = this;
     self.$el.css({
         height: 0,
         borderTopWidth: 0,
         transition: 'height 0.25s, border-top-width 0.25s'
     })
-    self.isLoading = false;
-
 };
 
 
